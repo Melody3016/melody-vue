@@ -1,85 +1,54 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { RouterView } from 'vue-router';
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
   <RouterView />
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
+<style lang="scss">
+html,
+body {
   width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+  height: 100%;
+  background: #f0f0f0;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
+#app {
+  width: 100%;
+  height: 100%;
 }
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+// 暗黑
+.darkMode {
+  filter: invert(1) hue-rotate(180deg);
+  transition: all 300ms;
+  img,
+  video {
+    filter: invert(1) hue-rotate(180deg);
   }
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
+// 色弱
+.weakMode {
+  touch-action: none;
+  filter: invert(80%);
+}
+
+// 顶部加载条
+#nprogress {
+  .bar {
+    background: #1da57a !important;
+    .peg {
+      box-shadow:
+        0 0 10px #1da57a,
+        0 0 5px #1da57a;
+    }
   }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+  .spinner {
+    .spinner-icon {
+      border-top-color: #1da57a;
+      border-left-color: #1da57a;
+    }
   }
 }
 </style>
