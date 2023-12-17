@@ -1,93 +1,86 @@
-// import { loginReq } from "@/api"
-import utils from "@/libs/util"
-
-const useForm = Form.useForm
+import { loginReq } from '@/api';
+import utils from '@/libs/util';
+import type { FormInstance, FormRules } from 'element-plus';
 // 账户密码登录
 interface AccLoginState {
-  username: string
-  password: string
-  code: string
+  username: string;
+  password: string;
+  code: string;
 }
 export default (cb: Function) => {
   const accLoginModel = reactive<AccLoginState>({
-    username: "",
-    password: "",
-    code: ""
-  })
-  const accLoginRules: Record<string, Rule[]> = reactive({
+    username: '',
+    password: '',
+    code: ''
+  });
+  const accLoginRules = reactive<FormRules<AccLoginState>>({
     username: [
       {
         required: true,
-        message: userRuleEmpty.value,
-        trigger: "change"
+        message: '用户名不能为空',
+        trigger: 'change'
       }
     ],
     password: [
       {
         required: true,
-        message: pwdRuleEmpty.value,
-        trigger: "change"
+        message: '密码不能为空',
+        trigger: 'change'
       }
     ],
     code: [
       {
         required: true,
-        message: codeRuleEmpty.value,
-        trigger: "change"
+        message: '验证码不能为空',
+        trigger: 'change'
       }
     ]
-  })
-  const {
-    validate,
-    resetFields,
-    validateInfos: validateInfosAcc
-  } = useForm(accLoginModel, accLoginRules, {
-    // onValidate: (...args) => console.log(...args)
-  })
+  });
 
-  const loginByAccount = async (saveLogin: boolean, captchaId: string) => {
+  const loginByAccount = async (
+    saveLogin: boolean,
+    captchaId: string,
+    accLoginRef: FormInstance
+  ) => {
+    if (!accLoginRef) return;
     // 校验
-    const [validateErr, validateRes] = await utils.awaitWrap(
-      validate<ILoginParam>()
-    )
+    const [validateErr, validateRes] = await utils.awaitWrap(accLoginRef.validate());
     // 错误处理
     if (validateErr) {
-      Message.error("请填写完整！")
-      return
+      ElMessage.error('请填写完整！');
+      return;
     }
-    if (!validateRes) return
+    if (!validateRes) return;
     // 登录
     const params = {
-      ...validateRes,
+      ...accLoginModel,
       captchaId,
       saveLogin
-    }
-    const [error, loginRes] = await utils.awaitWrap(loginReq(params))
+    };
+    const [error, loginRes] = await utils.awaitWrap(loginReq(params));
     if (error) {
       // 错误处理
-      resetFields()
-      return
+      accLoginRef.resetFields()
+      return;
     }
-    if (!loginRes) return
+    if (!loginRes) return;
     if (loginRes.success) {
       // 返回token
-      return loginRes.result
+      return loginRes.result;
     } else {
       if (loginRes.result === null) {
-        resetFields({
-          username: accLoginModel.username
-        })
-        cb()
+        accLoginRef.resetFields()
+        cb();
       } else {
-        accLoginModel.code = ""
-        cb()
+        accLoginModel.code = '';
+        cb();
       }
     }
-  }
+  };
 
   return {
     accLoginModel,
-    validateInfosAcc,
+    accLoginRules,
     loginByAccount
-  }
-}
+  };
+};

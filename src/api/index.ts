@@ -42,6 +42,12 @@ export const loginReq = (params: ILoginParam) => {
 }
 
 // 发送短信验证码
+/**
+ type :
+   1 发送登录验证码
+   2 发送注册验证码
+   3 发送重置密码验证码
+ */
 export const sendSms = (params: ISmsParam, type: number) => {
   let url = "/common/captcha/"
   if (type === 1) {
@@ -50,11 +56,30 @@ export const sendSms = (params: ISmsParam, type: number) => {
   } else if (type === 2) {
     // 注册验证码
     url += `sendRegistSms/${params.mobile}`
+  } else if (type === 3) {
+    // 重置密码验证码
+    url += `sendResetSms/${params.mobile}`
   }
   return getNoAuthRequest<IData<string>>(url, {
     captchaId: params.captchaId,
     code: params.code
   })
+}
+
+// 通过手机重置密码
+export const resetByMobile = (params: IResetParam) => {
+  return postNoAuthRequest<IData<string>>('/auth/resetByMobile', params)
+}
+// 发送重置密码邮件验证码
+export const sendResetEmail = (params: IEmailParam) => {
+  return getNoAuthRequest<IData<string>>(`/email/sendResetCode/${params.email}`, {
+    captchaId: params.captchaId,
+    code: params.code
+  })
+}
+// 通过邮件重置密码
+export const resetByEmail = (params: IResetParam) => {
+  return postNoAuthRequest<IData<string>>('/auth/resetByEmail', params)
 }
 
 // 短信验证码登录

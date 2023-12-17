@@ -2,6 +2,16 @@ import type { RouteRecordRaw } from 'vue-router';
 import Main from '@/views/Main.vue';
 
 // 不作为Main组件的子页面展示的页面单独写，如下
+// 测试路由
+export const testRouter = {
+  path: '/test',
+  name: 'test',
+  meta: {
+    title: '测试 - vue3版本前后端分离快速开发平台'
+  },
+  component: () => import('@/views/test.vue')
+};
+
 export const loginRouter: RouteRecordRaw = {
   path: '/login',
   name: 'login',
@@ -11,41 +21,41 @@ export const loginRouter: RouteRecordRaw = {
   component: () => import('@/views/auth/login.vue')
 };
 
-/* export const loginQRRouter = {
+export const loginQRRouter = {
   path: '/login-qr',
   name: 'login-qr',
   meta: {
-    title: '扫码登录 - XBoot前后端分离开发平台 '
+    title: '扫码登录 - vue3版本前后端分离快速开发平台 '
   },
   component: () => import('@/views/auth/login-qr.vue')
-}; */
+};
 
-/* export const registRouter = {
+export const registRouter = {
   path: '/register',
   name: 'register',
   meta: {
-    title: '注册 - XBoot前后端分离开发平台'
+    title: '注册 - vue3版本前后端分离快速开发平台'
   },
   component: () => import('@/views/auth/register.vue')
-}; */
+};
 
-/* export const registResult = {
+export const registResult = {
   path: '/register-result',
   name: 'register-result',
   meta: {
-    title: '注册结果 - XBoot前后端分离开发平台'
+    title: '注册结果 - vue3版本前后端分离快速开发平台'
   },
   component: () => import('@/views/auth/register-result.vue')
-}; */
+};
 
-/* export const reset = {
+export const reset = {
   path: '/reset',
   name: 'reset',
   meta: {
-    title: '重置密码 - XBoot前后端分离开发平台'
+    title: '重置密码 - vue3版本前后端分离快速开发平台'
   },
   component: () => import('@/views/auth/reset.vue')
-}; */
+};
 
 /* export const relateRouter = {
   path: '/relate',
@@ -152,11 +162,12 @@ export const appRouter = [];
 
 // 所有上面定义的路由都要写在下面的routers里
 export const routers = [
+  testRouter,
   loginRouter,
-  //   loginQRRouter,
-  //   registRouter,
-  //   registResult,
-  //   reset,
+  loginQRRouter,
+  registRouter,
+  registResult,
+  reset,
   //   relateRouter,
   //   authorizeRouter,
   otherRouter,

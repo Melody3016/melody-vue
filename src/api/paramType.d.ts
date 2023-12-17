@@ -18,9 +18,24 @@ interface IRegisterParam {
   passStrength: string
 }
 
+// 重置密码
+interface IResetParam {
+  password: string
+  code: string
+  passStrength: string
+  mobile?: string
+  email?: string
+}
+
 // 短信验证码
 interface ISmsParam {
   mobile: string
+  captchaId?: string
+  code?: string
+}
+// 邮箱验证码
+interface IEmailParam {
+  email: string
   captchaId?: string
   code?: string
 }

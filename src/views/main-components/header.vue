@@ -3,6 +3,7 @@
     <div class="header">
       <!-- <img src="@/assets/logo-white.png" width="220px" v-if="mainTheme == 'darkMode'" />
       <img src="@/assets/logo-black.png" width="220" v-else /> -->
+      <img src="@/assets/images/logo-social.png" width="300"/>
       <div class="description">前后端分离快速开发平台</div>
     </div>
   </div>
@@ -19,12 +20,12 @@
 
 <style lang="scss" scoped>
 .header {
-  padding-top: 8vh;
+  margin-top: 8vh;
   margin-bottom: 5vh;
   text-align: center;
 
   .description {
-    font-size: 24px;
+    font-size: 20px;
     padding-top: 1vh;
   }
 }

@@ -61,6 +61,8 @@ export default defineConfig({
         changeOrigin: true
         // rewrite: (path) => path.replace(/^\/api/, "")
       }
-    }
+    },
+    host: '192.168.31.199',
+    port: 5173
   }
 });

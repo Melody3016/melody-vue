@@ -1,7 +1,7 @@
 <template>
   <div class="foot">
-    <el-row type="flex" justify="center" class="copyright"> Copyright © 2020 - Present </el-row>
     <el-row type="flex" justify="center" class="copyright"> vue3 + element-plus + vite </el-row>
+    <el-row type="flex" justify="center" class="copyright"> Copyright © 2022 - Present </el-row>
   </div>
 </template>
 

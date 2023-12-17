@@ -1,148 +1,186 @@
 <template>
   <div class="login">
     <div class="layout">
-      <div style="margin-top: 20px;">
-        <Header></Header>
-        <div style="position: relative">
-          <el-tabs v-model="activeTabName">
-            <el-tab-pane name="user">
-              <template #label>
-                <span>
-                  <el-icon><User /></el-icon>
-                  <span>账户密码登录</span>
-                </span>
-              </template>
-              <el-form class="form">
-                <el-form-item name="username">
+      <Header></Header>
+      <div class="pane" style="position: relative">
+        <el-tabs v-model="activeTabName" :stretch="true" class="tabs">
+          <el-tab-pane name="user">
+            <template #label>
+              <span style="display: flex; align-items: center">
+                <el-icon style="margin-right: 6px"><User /></el-icon>
+                <span>账户密码登录</span>
+              </span>
+            </template>
+            <el-form
+              class="my-form"
+              ref="accLoginRef"
+              :model="accLoginModel"
+              :rules="accLoginRules"
+              @keyup.enter="submitLogin"
+            >
+              <el-form-item name="username" prop="username">
+                <el-input
+                  v-model="accLoginModel.username"
+                  placeholder="请输入用户名"
+                  size="large"
+                  autocomplete="off"
+                  allowClear
+                  clearable
+                  input-style="font-size:16px"
+                >
+                  <template #prefix>
+                    <el-icon><User /></el-icon>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item name="password" prop="password">
+                <el-input
+                  v-model="accLoginModel.password"
+                  placeholder="请输入密码"
+                  size="large"
+                  show-password
+                  clearable
+                  input-style="font-size:16px"
+                >
+                  <template #prefix>
+                    <el-icon><Lock /></el-icon>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item name="imgCode" prop="code">
+                <div class="imgCode">
                   <el-input
-                    placeholder="请输入用户名"
+                    v-model="accLoginModel.code"
                     size="large"
-                    autocomplete="off"
-                    allowClear
                     clearable
+                    placeholder="请输入验证码"
+                    :maxlength="4"
+                    class="input-verify"
+                    input-style="font-size:16px"
                   >
                     <template #prefix>
-                      <el-icon><User /></el-icon>
-                    </template>
+                      <el-icon><Message /></el-icon
+                    ></template>
                   </el-input>
-                </el-form-item>
-                <el-form-item name="password">
-                  <el-input placeholder="请输入密码" size="large" show-password clearable>
-                    <template #prefix>
-                      <el-icon><Lock /></el-icon>
-                    </template>
-                  </el-input>
-                </el-form-item>
-                <el-form-item name="imgCode">
-                  <el-row
-                    type="flex"
-                    justify="space-between"
-                    style="align-items: center; overflow: hidden"
+                  <div
+                    v-loading="loadingCaptcha"
+                    class="code-image"
+                    style="position: relative; font-size: 12px"
                   >
-                    <el-input
-                      size="large"
-                      allowClear
-                      autocomplete="off"
-                      placeholder="请输入验证码"
-                      :maxlength="10"
-                      class="input-verify"
+                    <img
+                      :src="captchaImg"
+                      alt="加载验证码失败"
+                      @click="getCaptchaImg"
+                      v-loading="Boolean(captchaImg)"
+                      style="
+                        width: 110px;
+                        height: 38px;
+                        line-height: 38px;
+                        cursor: pointer;
+                        display: block;
+                      "
                     />
-                    <div
-                      v-loading="loadingCaptcha"
-                      class="code-image"
-                      style="position: relative; font-size: 12px"
-                    >
-                      <img
-                        :src="captchaImg"
-                        alt="加载验证码失败"
-                        @click="getCaptchaImg"
-                        style="
-                          width: 110px;
-                          height: 32px;
-                          line-height: 32px;
-                          cursor: pointer;
-                          display: block;
-                        "
-                      />
-                    </div>
-                  </el-row>
-                </el-form-item>
-              </el-form>
-            </el-tab-pane>
-            <el-tab-pane name="phone">
-              <template #label>
-                <el-icon><Iphone /></el-icon>
+                  </div>
+                </div>
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+          <el-tab-pane name="phone">
+            <template #label>
+              <span style="display: flex; align-items: center">
+                <el-icon style="margin-right: 6px"><Iphone /></el-icon>
                 <span>手机短信登录</span>
-              </template>
-              <el-form class="form">
-                <el-form-item name="mobile">
-                  <el-input placeholder="请输入手机号" size="large" clearable>
+              </span>
+            </template>
+            <el-form
+              ref="phoneLoginRef"
+              :model="mobLoginModel"
+              :rules="mobLoginRules"
+              @keyup.enter="submitLogin"
+            >
+              <el-form-item name="mobile" prop="mobile">
+                <el-input
+                  v-model="mobLoginModel.mobile"
+                  placeholder="请输入手机号"
+                  type="tel"
+                  size="large"
+                  clearable
+                  input-style="font-size:16px"
+                >
+                  <template #prefix>
+                    <el-icon><Iphone /></el-icon>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item name="code" prop="code">
+                <el-row type="flex" justify="space-between" class="sms-code">
+                  <el-input
+                    v-model="mobLoginModel.code"
+                    type="tel"
+                    size="large"
+                    clearable
+                    placeholder="请输入短信验证码"
+                    :maxlength="6"
+                    class="input-verify"
+                    input-style="font-size:16px"
+                  >
                     <template #prefix>
-                      <el-icon><Iphone /></el-icon>
+                      <el-icon><Message /></el-icon>
                     </template>
                   </el-input>
-                </el-form-item>
-                <el-form-item name="code">
-                  <el-row type="flex" justify="space-between">
-                    <el-input
-                      size="large"
-                      clearable
-                      placeholder="请输入短信验证码"
-                      :maxlength="6"
-                      class="input-verify"
-                    >
-                      <template #prefix>
-                        <el-icon><Message /></el-icon>
-                      </template>
-                    </el-input>
-                    <!-- <CountDownButton
-                        ref="countDown"
-                        @on-click="sendSmsCode"
-                        :autoCountDown="autoCountDown"
-                        size="large"
-                        :loading="sending"
-                        :text="getSms"
-                      /> -->
-                  </el-row>
-                </el-form-item>
-              </el-form>
-            </el-tab-pane>
-          </el-tabs>
-          <!-- <a-tooltip @click="toQrCodeLogin" placement="rightTop">
-              <template #title>
-                <span>{{ $t('qrCodeTip') }}</span>
-              </template>
-              <qrcode-outlined />
-            </a-tooltip> -->
+                  <CountDownButton
+                    ref="countDown"
+                    @on-click="() => sendSmsCode(phoneLoginRef)"
+                    :autoCountDown="autoCountDown"
+                    size="large"
+                    :loading="sending"
+                    text="获取验证码"
+                    style="width: 110px"
+                  />
+                </el-row>
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+        </el-tabs>
+        <el-tooltip placement="right-start">
+          <template #content>
+            <span>扫码登录</span>
+          </template>
+          <el-icon @click="toQrCodeLogin" class="qr-code"><Grid /></el-icon>
+        </el-tooltip>
 
-          <!-- <a-row type="flex" justify="space-between" align="middle">
-              <a-checkbox v-model:checked="saveLogin" size="large">{{
-                $t('autoLogin')
-              }}</a-checkbox>
-              <a-dropdown :trigger="['click']" @on-click="handleDropDown">
-                <a class="forget-pass">{{ $t('forgetPass') }}</a>
-                <template #overlay>
-                  <a-menu>
-                    <a-menu-item name="resetByMobile">{{ $t('phoneResetPwd') }}</a-menu-item>
-                    <a-menu-item name="resetByEmail">{{ $t('emailResetPwd') }}</a-menu-item>
-                  </a-menu>
-                </template>
-              </a-dropdown>
-            </a-row> -->
-          <!-- <a-row>
-              <a-button
-                class="login-btn"
-                type="primary"
-                size="large"
-                :loading="loading"
-                @click="submitLogin"
-                long
-              >
-                <span v-if="!loading">{{ $t('login') }}</span>
-                <span v-else>{{ $t('logining') }}</span>
-              </a-button>
-            </a-row> -->
-          <!-- <a-row type="flex" justify="space-between" class="other-login">
+        <el-row justify="space-between" align="middle">
+          <el-checkbox v-model:checked="saveLogin" size="large"
+            ><span style="font-size: 16px">自动登录</span></el-checkbox
+          >
+        </el-row>
+        <el-row style="margin: 20px 0">
+          <el-button
+            class="login-btn"
+            type="primary"
+            size="large"
+            :loading="loading"
+            @click="submitLogin"
+          >
+            <span v-if="!loading">登录</span>
+            <span v-else>登录中</span>
+          </el-button>
+        </el-row>
+        <el-row justify="space-between" align="middle">
+          <el-dropdown placement="bottom-start">
+            <span class="forget-pass">忘记密码</span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item name="resetByMobile"><router-link to="/reset">使用手机号重置密码</router-link></el-dropdown-item>
+                <el-dropdown-item name="resetByEmail"><router-link to="/reset?type=2">使用邮箱重置密码</router-link></el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+          <router-link to="/register">
+            <span class="forget-pass">点击注册</span>
+          </router-link>
+        </el-row>
+        <!-- <a-row type="flex" justify="space-between" class="other-login">
               <div class="other-way icons">
                 {{ $t('otherLogin') }}
                 <div class="other-icon" @click="toGithubLogin">
@@ -167,7 +205,6 @@
                 <a class="forget-pass">{{ $t('register') }}</a>
               </router-link>
             </a-row> -->
-        </div>
       </div>
       <Footer></Footer>
     </div>
@@ -176,193 +213,151 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, getCurrentInstance } from 'vue';
 import { useRouter } from 'vue-router';
+import { User, Lock, Iphone, Message, Grid } from '@element-plus/icons-vue';
 import Header from '@/views/main-components/header.vue';
 import Footer from '@/views/main-components/footer.vue';
-import { User, Lock, Iphone, Message } from '@element-plus/icons-vue';
+import CountDownButton from '@/views/my-components/xboot/count-down-button.vue';
 import useCaptchaImg from '@/hooks/useCaptchaImg';
-// import useNotice from './hooks/useNotice';
-// import useAccountLogin from './hooks/useAccountLogin';
-// import usePhoneLogin from './hooks/usePhoneLogin';
+import useNotice from './hooks/useNotice';
+import useAccountLogin from './hooks/useAccountLogin';
+import type { FormInstance } from 'element-plus';
+import usePhoneLogin from './hooks/usePhoneLogin';
 // import useAfterLogin from './hooks/useAfterLogin';
 
 onMounted(() => {
-  relatedLogin();
-  // getNoticeInfo();
+  // relatedLogin();
+  // 通知提醒框
+  getNoticeInfo();
+  // 获取验证码
   getCaptchaImg();
 });
 const $router = useRouter();
 const instance = getCurrentInstance();
 
 // UI
-const showMore = ref(false);
+// const showMore = ref(false);
 const saveLogin = ref(true);
 const activeTabName = ref('user');
 const loading = ref(false);
 
 // 生成通知提醒框
-// const { getNoticeInfo } = useNotice();
+const { getNoticeInfo } = useNotice();
 
 // 生成验证码
 const { loadingCaptcha, captchaImg, captchaId, getCaptchaImg } = useCaptchaImg();
 
 // 账户密码登录
-// const { accLoginModel, validateInfosAcc, loginByAccount } = useAccountLogin(getCaptchaImg);
+const accLoginRef = ref<FormInstance>();
+const { accLoginModel, accLoginRules, loginByAccount } = useAccountLogin(getCaptchaImg);
 
 // 手机验证码登录
-// const { mobLoginModel, validateInfosMob, sending, autoCountDown, sendSmsCode, loginByPhone } =
-//   usePhoneLogin();
+const phoneLoginRef = ref<FormInstance>();
+const { mobLoginModel, mobLoginRules, sending, autoCountDown, sendSmsCode, loginByPhone } =
+  usePhoneLogin();
 
 // 登录
 const submitLogin = async () => {
-  // loading.value = true;
-  // let accessToken = null;
-  // if (tabKey.value === '1') {
-  //   // 账号密码登录
-  //   accessToken = await loginByAccount(saveLogin.value, captchaId.value);
-  // } else {
-  //   // 手机验证码登录
-  //   accessToken = await loginByPhone(saveLogin.value);
-  // }
-  // if (accessToken) {
-  //   const { afterLogin } = useAfterLogin(instance);
-  //   await afterLogin(accessToken, saveLogin.value);
-  // }
-  // loading.value = false;
+  if (!accLoginRef.value || !phoneLoginRef.value) return;
+  loading.value = true;
+  let accessToken = null;
+  if (activeTabName.value === 'user') {
+    // 账号密码登录
+    accessToken = await loginByAccount(saveLogin.value, captchaId.value, accLoginRef.value);
+  } else {
+    // 手机验证码登录
+    accessToken = await loginByPhone(saveLogin.value, phoneLoginRef.value);
+  }
+  if (accessToken) {
+    console.log('登录成功！', accessToken);
+    // const { afterLogin } = useAfterLogin(instance);
+    // await afterLogin(accessToken, saveLogin.value);
+  }
+  loading.value = false;
 };
 
 // 二维码登录
 const toQrCodeLogin = () => {
   $router.push('/login-qr');
 };
-const relatedLogin = () => {};
+// const relatedLogin = () => {};
 </script>
 
 <style scoped lang="scss">
 .login {
   height: 100%;
-  background: url('@/assets/background.svg');
+  background: url('@/assets/images/background.svg');
   background-color: #f0f2f5;
 
   .layout {
-    margin: 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 368px;
+    align-items: center;
     height: 100%;
 
-    :deep(.ant-tabs) {
-      .ant-tabs-nav-wrap {
-        display: block;
-        .ant-tabs-nav-list {
+    .pane {
+      flex: 1;
+      width: 368px;
+
+      .tabs {
+        :deep(.el-tabs__nav-wrap) {
           width: 90%;
-          .ant-tabs-tab {
-            flex: 1;
-            font-size: 17px;
-            .ant-tabs-tab-btn {
-              margin: 0 auto;
+        }
+
+        :deep(.el-tabs__item) {
+          height: 66px;
+          font-size: 18px;
+        }
+
+        .my-form {
+          .imgCode {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            .input-verify {
+              flex: 0 1 240px;
             }
           }
         }
       }
-      .ant-tabs-content {
-        transition: margin 0.5s;
-        .ant-input {
-          padding-left: 15px;
-        }
-        #form_item_imgCode {
-          padding-left: 0;
-        }
-      }
-    }
 
-    :deep(.anticon-qrcode) {
-      position: absolute;
-      top: 18px;
-      right: 0;
-      font-size: 34px;
-      color: #1da57a;
-      cursor: pointer;
-      transition: all 0.3s ease 0.1s;
-
-      &:hover {
-        transform: scale(1.5);
-        svg {
-          clip-path: none;
-          // clip-path: polygon(-85% 0%, 0% -100%, 200% 100%, 0% 100%);
-        }
-      }
-      svg {
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 0);
-      }
-    }
-  }
-
-  :deep(.ant-tabs-nav-wrap) {
-    line-height: 2;
-    font-size: 17px;
-    box-sizing: border-box;
-    white-space: nowrap;
-    overflow: hidden;
-    position: relative;
-    zoom: 1;
-  }
-
-  .form {
-    padding-top: 1vh;
-
-    .input-verify {
-      width: 67%;
-    }
-  }
-
-  .code-image {
-    height: 32px;
-    :deep(.ant-spin-spinning) {
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 8;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(255, 255, 255, 0.9);
-      .ant-spin-dot {
+      .qr-code {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-left: -10px;
-        margin-top: -10px;
-        font-size: 17px;
+        top: 18px;
+        right: 0;
+        font-size: 34px;
+        color: #409eff;
+        cursor: pointer;
+        transition: all 0.3s ease 0.1s;
+
+        &:hover {
+          transform: scale(1.5);
+          svg {
+            clip-path: none;
+            // clip-path: polygon(-85% 0%, 0% -100%, 200% 100%, 0% 100%);
+          }
+        }
+        svg {
+          clip-path: polygon(0 0, 100% 0, 100% 100%, 0 0);
+        }
       }
-    }
-  }
+      .login-btn {
+        width: 100%;
+      }
+      .forget-pass {
+        font-size: 16px;
+        color: #409eff;
+      }
+      .sms-code {
+        flex-wrap: nowrap;
+        width: 100%;
 
-  .forget-pass,
-  .other-way {
-    font-size: 14px;
-  }
-
-  .login-btn,
-  .other-login {
-    margin-top: 3vh;
-  }
-
-  .icons {
-    display: flex;
-    align-items: center;
-  }
-
-  .other-icon {
-    cursor: pointer;
-    margin-left: 8px;
-    display: flex;
-    align-items: center;
-    color: rgba(0, 0, 0, 0.2);
-
-    :hover {
-      color: #2d8cf0;
+        .input-verify {
+          flex: 0 1 240px;
+        }
+      }
     }
   }
 }

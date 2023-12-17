@@ -19,7 +19,8 @@ router.beforeEach((to, from, next) => {
     'register-result',
     'relate',
     'reset',
-    'authorize'
+    'authorize',
+    'test'
   ];
   const isInWhiteList = util.oneOf(name, whiteList);
   if (!Cookies.get('userInfo') && !isInWhiteList) {
